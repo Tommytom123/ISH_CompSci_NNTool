@@ -1,15 +1,17 @@
 
 console.log("Running");
-var brain = require("brain.js");
+var brain = require("./brain.js");
 var fs = require('fs');
 autoRecord();
 
 function autoRecord(){
   var variations = [10,50,100,200,500]; //
   test_size = 5000;
+  var randomize = true; // Extension after the experiment
   var data;
   var db = {};
   for(var i=0;i<3;i++){
+    console.log("Trial: " + i); 
     for(var x=0;x<variations.length ;x++) {
       console.log("Current training sample size: " + variations[x]);
       data = sampleit(runnet(variations[x]), test_size);
@@ -62,7 +64,19 @@ function runnet(r) {
     rectjson.push(myJson);
     allinputs.push(myJson);
   }
-
+  //console.log(allinputs);
+  //SHUFFLING ARRAY - THIS REMOVES THE RECTANGLE OVERFIT
+  
+  const shuffle = array => { 
+    for (let i = array.length - 1; i > 0; i--) { 
+      const j = Math.floor(Math.random() * (i + 1)); 
+      [array[i], array[j]] = [array[j], array[i]]; 
+    } 
+    return array; 
+  }; 
+   
+  allinputs = shuffle(allinputs); 
+  //console.log(allinputs);
   
   //NN stuff
   //console.log("Making net");

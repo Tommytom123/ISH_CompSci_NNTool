@@ -14,7 +14,7 @@ function autoRecord(){
     console.log("Trial: " + i); 
     for(var x=0;x<variations.length ;x++) {
       console.log("Current training sample size: " + variations[x]);
-      data = sampleit(runnet(variations[x]), test_size);
+      data = sampleit(runnet(variations[x], randomize), test_size);
       //console.log(variations[x] + ": " + data);
       db[variations[x]] = data;
     }
@@ -28,7 +28,7 @@ function autoRecord(){
 
 }
 
-function runnet(r) {
+function runnet(r, rand) {
   var net;
   // REAL STUFF
   var tris = r;
@@ -66,18 +66,18 @@ function runnet(r) {
   }
   //console.log(allinputs);
   //SHUFFLING ARRAY - THIS REMOVES THE RECTANGLE OVERFIT
-  
-  const shuffle = array => { 
-    for (let i = array.length - 1; i > 0; i--) { 
-      const j = Math.floor(Math.random() * (i + 1)); 
-      [array[i], array[j]] = [array[j], array[i]]; 
-    } 
-    return array; 
-  }; 
-   
-  allinputs = shuffle(allinputs); 
-  //console.log(allinputs);
-  
+  if (rand == true){
+    const shuffle = array => { 
+      for (let i = array.length - 1; i > 0; i--) { 
+        const j = Math.floor(Math.random() * (i + 1)); 
+        [array[i], array[j]] = [array[j], array[i]]; 
+      } 
+      return array; 
+    }; 
+    
+    allinputs = shuffle(allinputs); 
+    //console.log(allinputs);
+  }
   //NN stuff
   //console.log("Making net");
   net = new brain.NeuralNetwork({

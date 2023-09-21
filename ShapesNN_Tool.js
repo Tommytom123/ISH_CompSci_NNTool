@@ -1,6 +1,6 @@
 
 console.log("Running");
-var brain = require("C:\\Users\\Tom Brouwers\\Documents\\Programming\\CompSciScrape\\brain.js");
+var brain = require("brain.js");
 var fs = require('fs');
 autoRecord();
 

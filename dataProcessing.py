@@ -8,7 +8,7 @@ import numpy as np
 acc_total = [[],[],[]]
 y = [[],[],[]] #Quick and dirty solution to average the averages and match their respective sample sizes. Not good, but it works
 for i in range(3):
-    jsonString = open("C:\\Users\\Tom Brouwers\\Documents\\Programming\\ISH_CompSci_NNTool\\ShapesNN_T1_Set.json")
+    jsonString = open(".\\ShapesNN_T1_Set.json")
     data = json.load(jsonString) #Converts to dict
     
 

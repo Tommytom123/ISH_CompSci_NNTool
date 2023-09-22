@@ -5,20 +5,22 @@ var fs = require('fs');
 autoRecord();
 
 function autoRecord(){
-  var variations = [10,50,100,200,500]; //
-  test_size = 5000;
-  var randomize = true; // Extension after the experiment
+  // Config
+  var variations = [[10,10,10],[20,20,20],[30,30,30],[40,40,40],[60,60,60],[100,100,100],[300,300,300],[800,800,800],[1500,1500,1500],[2500,2500,2500],[5000,5000,5000],[10000,10000,10000]]; //[(Variation 1)[Rect, circle, triangle], (Variation 2)[Rect, circle, triangle],...]. It allows for a non 1:1:1 relationships, which can lead to interesting results
+  var test_size = 5000;
+  var trials = 1;
+  var randomize = "_Rand"; // Extension after the experiment. If not randomizing, change to "_Set". This isn't a boolean to make changing the filename easier
+  // --
   var data;
   var db = {};
-  for(var i=0;i<3;i++){
+  for(var i=0;i<trials;i++){ // Trials
     console.log("Trial: " + i); 
-    for(var x=0;x<variations.length ;x++) {
-      console.log("Current training sample size: " + variations[x]);
-      data = sampleit(runnet(variations[x], randomize), test_size);
-      //console.log(variations[x] + ": " + data);
-      db[variations[x]] = data;
+    for(var x=0;x<variations.length ;x++) {// Goes through the different variations
+      console.log("Current training sample size - Rectangles: " +variations[x][0] + " Circles: " + variations[x][1] + " Triangles: " + variations[x][2]);
+      data = sampleit(runnet(variations[x][0],variations[x][1],variations[x][2], randomize), test_size);
+      db[variations[x]] = data; // Adds a json/dictionary entry with results
     }
-  fs.writeFile('ShapesNN_T'+ (i+1) +'.json', JSON.stringify(db), 'utf8', function(err) {
+  fs.writeFile('ShapesNN_T'+ (i+1) + randomize +'.json', JSON.stringify(db), 'utf8', function(err) {
     if (err) throw err;
     console.log('File written');
     });
@@ -28,12 +30,13 @@ function autoRecord(){
 
 }
 
-function runnet(r, rand) {
+function runnet(r, c, t, rand) {
   var net;
   // REAL STUFF
-  var tris = r;
-  var circs = r;
   var rects = r;
+  var circs = c;
+  var tris = t;
+  
   
   var trijson = [];
   var circjson = [];
@@ -44,10 +47,11 @@ function runnet(r, rand) {
   var name,shape
 
   // create shapes
-  for(var i=0;i<tris;i++) {
-    t = character(generateTriangle());
-    myJson = {input: t, output: { tri:1}};
-    trijson.push(myJson);
+  // First creates Rectangles, then adds Circles and finally Triangles
+  for(var i=0;i<rects;i++) {
+    r = character(generateRectangle());
+    myJson = {input: r, output: { rect:1}};
+    rectjson.push(myJson);
     allinputs.push(myJson);
   }
 
@@ -58,15 +62,17 @@ function runnet(r, rand) {
     allinputs.push(myJson);
   }
 
-  for(var i=0;i<rects;i++) {
-    r = character(generateRectangle());
-    myJson = {input: r, output: { rect:1}};
-    rectjson.push(myJson);
+  for(var i=0;i<tris;i++) {
+    t = character(generateTriangle());
+    myJson = {input: t, output: { tri:1}};
+    trijson.push(myJson);
     allinputs.push(myJson);
   }
+
   //console.log(allinputs);
   //SHUFFLING ARRAY - THIS REMOVES THE RECTANGLE OVERFIT
-  if (rand == true){
+  
+  if (rand == "_Rand"){
     const shuffle = array => { 
       for (let i = array.length - 1; i > 0; i--) { 
         const j = Math.floor(Math.random() * (i + 1)); 
@@ -78,6 +84,7 @@ function runnet(r, rand) {
     allinputs = shuffle(allinputs); 
     //console.log(allinputs);
   }
+  
   //NN stuff
   //console.log("Making net");
   net = new brain.NeuralNetwork({
@@ -96,7 +103,7 @@ function sampleit(n, sz) { // Tests the model
   var ssize = sz; //Constant value
   //console.log("Training");
 
-  var scores = [[0,0,0],[0,0,0],[0,0,0]]; // [Rect[Rect, Circ, Tri], Circ[Rect, Circ, Tri], Tri[Rect, Circ, Tri]] This allows for a confusion matrix
+  var scores = [[0,0,0],[0,0,0],[0,0,0]]; // [(Rect)[Rect, Circ, Tri], Circ[Rect, Circ, Tri], Tri[Rect, Circ, Tri]] This allows for a confusion matrix
   var g;
   var shape_dict = {
     0 : "rect",

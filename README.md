@@ -5,7 +5,7 @@ Calling autorecord runs the training, testing and write to JSON. It automaticall
 variations is an array of the different sample sizes. [[(SampleSize1) [No. rectangles, No. Circles, No. Triangles],[(SampleSize2) [No. rectangles, No. Circles, No. Triangles]],...]
 trials is the number of trials the program needs to run (Default 3)
 test_size is the number of each shape to test on (The total size of the training dataset, with all shapes, is test_size * 3)
-randomize enables the shuffling of the training data. It removes the rectangle (The last batch of shapes) overfit.
+randomize enables the shuffling of the training data. It removes the last batch of training shapes overfit.
 
 Documentation on the investigation: https://docs.google.com/document/d/1HZLcWjyIplNWvR5LCi1_EM4CD06GPjwfy64Cr5lVvoU/edit?usp=sharing
 
